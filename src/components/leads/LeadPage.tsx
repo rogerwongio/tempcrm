@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,12 +7,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Building2, Mail, Phone, User, Globe } from "lucide-react";
-import { type Lead } from "@/lib/api/leads";
+import { type Lead, getLead } from "@/lib/api/leads";
 import { type Comment } from "@/lib/api/comments";
 import { getComments, createComment } from "@/lib/api/comments";
 import { formatDate } from "@/lib/utils/date";
 
 const LeadPage = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const { toast } = useToast();
   const [lead, setLead] = useState<Lead>();
@@ -20,6 +21,22 @@ const LeadPage = () => {
   const [newComment, setNewComment] = useState("");
 
   useEffect(() => {
+    const loadLead = async () => {
+      if (!id) return;
+      try {
+        const data = await getLead(id);
+        setLead(data);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to load lead",
+          variant: "destructive",
+        });
+        navigate("/leads");
+      }
+    };
+
+    loadLead();
     loadComments();
   }, [id]);
 
@@ -59,14 +76,19 @@ const LeadPage = () => {
     }
   };
 
-  if (!id) return null;
+  if (!id || !lead) return null;
 
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="bg-white rounded-lg shadow-sm p-6">
         <div className="flex justify-between items-start mb-6">
           <h1 className="text-2xl font-bold text-gray-900">{lead.name}</h1>
-          <Button variant="outline">Edit Lead</Button>
+          <Button
+            variant="outline"
+            onClick={() => navigate(`/leads/${id}/edit`)}
+          >
+            Edit Lead
+          </Button>
         </div>
 
         <Tabs defaultValue="details" className="w-full">
@@ -193,14 +215,25 @@ const LeadPage = () => {
             <TabsContent value="comments">
               <div className="space-y-6">
                 <div className="space-y-4">
-                  {comments.map((comment) => (
-                    <div key={comment.id} className="bg-gray-50 rounded-lg p-4">
-                      <p className="whitespace-pre-wrap">{comment.content}</p>
-                      <p className="text-sm text-gray-500 mt-2">
-                        {formatDate(comment.created_at)}
-                      </p>
-                    </div>
-                  ))}
+                  {[...comments]
+                    .sort((a, b) => {
+                      if (!a.created_at || !b.created_at) return 0;
+                      return (
+                        new Date(b.created_at).getTime() -
+                        new Date(a.created_at).getTime()
+                      );
+                    })
+                    .map((comment) => (
+                      <div
+                        key={comment.id}
+                        className="bg-gray-50 rounded-lg p-4"
+                      >
+                        <p className="whitespace-pre-wrap">{comment.content}</p>
+                        <p className="text-sm text-gray-500 mt-2">
+                          {formatDate(comment.created_at)}
+                        </p>
+                      </div>
+                    ))}
                 </div>
 
                 <div className="space-y-4">

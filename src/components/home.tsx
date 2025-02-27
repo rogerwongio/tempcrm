@@ -1,24 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  getLeads,
-  createLead,
-  updateLead,
-  deleteLead,
-  type Lead,
-} from "@/lib/api/leads";
-import { formatDate } from "@/lib/utils/date";
+import { getLeads, deleteLead, updateLead, type Lead } from "@/lib/api/leads";
 import LeadManagementHeader from "./leads/LeadManagementHeader";
 import LeadTable from "./leads/LeadTable";
-import LeadFormDialog from "./leads/LeadFormDialog";
-import LeadDetailsDialog from "./leads/LeadDetailsDialog";
+
 import { Pagination } from "@/components/ui/pagination";
 
 const Home = () => {
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [selectedLead, setSelectedLead] = useState<Lead | undefined>();
-  const [formMode, setFormMode] = useState<"create" | "edit">("create");
+  const navigate = useNavigate();
 
   const { toast } = useToast();
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -40,37 +30,6 @@ const Home = () => {
       });
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleFormSubmit = async (
-    data: Omit<Lead, "id" | "created_at" | "updated_at">,
-  ) => {
-    try {
-      if (formMode === "create") {
-        await createLead(data);
-        toast({
-          title: "Success",
-          description: "Lead created successfully",
-        });
-      } else if (selectedLead) {
-        await updateLead(selectedLead.id, data);
-        toast({
-          title: "Success",
-          description: "Lead updated successfully",
-        });
-      }
-      loadLeads();
-      setIsFormOpen(false);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description:
-          formMode === "create"
-            ? "Failed to create lead"
-            : "Failed to update lead",
-        variant: "destructive",
-      });
     }
   };
 
@@ -99,23 +58,30 @@ const Home = () => {
     console.log("Sorting by:", column);
   };
 
+  const handleStatusChange = async (id: string, status: string) => {
+    try {
+      await updateLead(id, { status });
+      toast({
+        title: "Status Updated",
+        description: `Lead status changed to ${status}`,
+        variant: "default",
+      });
+      loadLeads();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update lead status",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleAddContact = () => {
-    setFormMode("create");
-    setSelectedLead(undefined);
-    setIsFormOpen(true);
+    navigate("/leads/new");
   };
 
   const handleEdit = (id: string) => {
-    const lead = leads.find((l) => l.id === id);
-    setSelectedLead(lead);
-    setFormMode("edit");
-    setIsFormOpen(true);
-  };
-
-  const handleView = (id: string) => {
-    const lead = leads.find((l) => l.id === id);
-    setSelectedLead(lead);
-    setIsDetailsOpen(true);
+    navigate(`/leads/${id}/edit`);
   };
 
   return (
@@ -136,7 +102,7 @@ const Home = () => {
             onSort={handleSort}
             onEdit={handleEdit}
             onDelete={handleDelete}
-            onView={handleView}
+            onStatusChange={handleStatusChange}
           />
         </div>
 
@@ -147,20 +113,6 @@ const Home = () => {
             onPageChange={(page) => console.log("Page changed:", page)}
           />
         </div>
-
-        <LeadFormDialog
-          open={isFormOpen}
-          onOpenChange={setIsFormOpen}
-          onSubmit={handleFormSubmit}
-          initialData={selectedLead}
-          mode={formMode}
-        />
-
-        <LeadDetailsDialog
-          open={isDetailsOpen}
-          onOpenChange={setIsDetailsOpen}
-          lead={selectedLead}
-        />
       </div>
     </div>
   );

@@ -18,7 +18,8 @@ interface LeadTableProps {
   onSort?: (column: keyof Lead) => void;
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
-  onView?: (id: string) => void;
+
+  onStatusChange?: (id: string, status: string) => void;
 }
 
 const LeadTable = ({
@@ -48,7 +49,7 @@ const LeadTable = ({
   onSort = () => {},
   onEdit = () => {},
   onDelete = () => {},
-  onView = () => {},
+  onStatusChange = () => {},
 }: LeadTableProps) => {
   return (
     <div className="w-full bg-white rounded-md shadow-sm border">
@@ -115,7 +116,7 @@ const LeadTable = ({
               lead={lead}
               onEdit={onEdit}
               onDelete={onDelete}
-              onView={onView}
+              onStatusChange={onStatusChange}
             />
           ))}
         </TableBody>

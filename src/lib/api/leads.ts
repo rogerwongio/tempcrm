@@ -3,6 +3,17 @@ import type { Database } from "@/types/supabase";
 
 type Lead = Database["public"]["Tables"]["leads"]["Row"];
 
+const getLead = async (id: string) => {
+  const { data, error } = await supabase
+    .from("leads")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
 const getLeads = async () => {
   const { data, error } = await supabase
     .from("leads")
@@ -26,7 +37,10 @@ const createLead = async (
   return data;
 };
 
-const updateLead = async (id: string, lead: Partial<Lead>) => {
+const updateLead = async (
+  id: string,
+  lead: Partial<Omit<Lead, "id" | "created_at" | "updated_at">>,
+) => {
   const { data, error } = await supabase
     .from("leads")
     .update(lead)
@@ -45,4 +59,4 @@ const deleteLead = async (id: string) => {
 };
 
 export type { Lead };
-export { getLeads, createLead, updateLead, deleteLead };
+export { getLeads, getLead, createLead, updateLead, deleteLead };
