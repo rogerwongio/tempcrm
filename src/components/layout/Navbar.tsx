@@ -20,7 +20,7 @@ const Navbar = () => {
                 to="/dashboard"
                 className={cn(
                   "px-3 py-2 rounded-md text-sm font-medium",
-                  isActive("/dashboard")
+                  isActive("/")
                     ? "bg-gray-900 text-white"
                     : "text-gray-700 hover:bg-gray-100",
                 )}
@@ -31,7 +31,7 @@ const Navbar = () => {
                 to="/leads"
                 className={cn(
                   "px-3 py-2 rounded-md text-sm font-medium",
-                  isActive("/")
+                  isActive("/leads")
                     ? "bg-gray-900 text-white"
                     : "text-gray-700 hover:bg-gray-100",
                 )}
