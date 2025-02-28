@@ -230,7 +230,10 @@ const LeadPage = () => {
                       >
                         <p className="whitespace-pre-wrap">{comment.content}</p>
                         <p className="text-sm text-gray-500 mt-2">
-                          {formatDate(comment.created_at)}
+                          {formatDate(comment.created_at)}{" "}
+                          {comment.created_at
+                            ? new Date(comment.created_at).toLocaleTimeString()
+                            : ""}
                         </p>
                       </div>
                     ))}

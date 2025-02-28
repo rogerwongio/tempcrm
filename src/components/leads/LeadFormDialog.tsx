@@ -37,8 +37,13 @@ const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Phone number must be at least 10 characters"),
-  website: z.string().url("Invalid website URL").optional().nullable(),
-  company: z.string().min(2, "Company name must be at least 2 characters"),
+  website: z
+    .string()
+    .url("Invalid website URL")
+    .optional()
+    .nullable()
+    .or(z.literal("")),
+  company: z.string().optional(),
   notes: z.string().optional(),
   gclid: z.string().optional(),
   utm: z.string().optional(),

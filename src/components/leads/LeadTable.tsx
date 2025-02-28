@@ -76,7 +76,7 @@ const LeadTable = ({
                 <ArrowUpDown className="ml-2 h-4 w-4" />
               </Button>
             </TableHead>
-            <TableHead>
+            <TableHead className="w-[130px]">
               <Button
                 variant="ghost"
                 onClick={() => onSort("status")}

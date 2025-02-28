@@ -3,6 +3,7 @@ import { useRoutes, Routes, Route } from "react-router-dom";
 import Home from "./components/home";
 import DashboardPage from "./components/dashboard/DashboardPage";
 import LeadPage from "./components/leads/LeadPage";
+import Leads from "./components/leads/Leads";
 import LeadEditPage from "./components/leads/LeadEditPage";
 import LeadCreatePage from "./components/leads/LeadCreatePage";
 import ProposalStagePage from "./components/leads/ProposalStagePage";
@@ -19,10 +20,10 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/leads" element={<LeadPage />} />
+          <Route path="/leads" element={<Leads />} />
           <Route path="/proposals" element={<ProposalStagePage />} />
           <Route path="/leads/new" element={<LeadCreatePage />} />
-          <Route path="/leads/:id" element={<LeadPage />} />
+          <Route path="/leads/:id" element={<Leads />} />
           <Route path="/leads/:id/edit" element={<LeadEditPage />} />
         </Routes>
       </div>

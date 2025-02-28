@@ -81,6 +81,17 @@ const LeadEditPage = () => {
   };
 
   const handleSubmit = async (data: any) => {
+    // Clean empty string values for optional fields
+    Object.keys(data).forEach((key) => {
+      if (
+        key !== "name" &&
+        key !== "email" &&
+        key !== "phone" &&
+        data[key] === ""
+      ) {
+        data[key] = null;
+      }
+    });
     if (!id) return;
     try {
       await updateLead(id, data);
@@ -133,7 +144,10 @@ const LeadEditPage = () => {
                       >
                         <p className="whitespace-pre-wrap">{comment.content}</p>
                         <p className="text-sm text-gray-500 mt-2">
-                          {formatDate(comment.created_at)}
+                          {formatDate(comment.created_at)}{" "}
+                          {comment.created_at
+                            ? new Date(comment.created_at).toLocaleTimeString()
+                            : ""}
                         </p>
                       </div>
                     ))
